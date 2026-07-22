@@ -36,6 +36,25 @@ export default function BookCard({ index, book, open, done, onToggle, notes, onN
               />
             </div>
           ))}
+
+          {Array.isArray(book.questions) && book.questions.length ? (
+            <>
+              <div className="eyebrow" style={{ color: "var(--accent-ink)", margin: "22px 0 14px" }}>Why this book</div>
+              {book.questions.map((q, j) => (
+                <div className="anchor" key={"s" + j}>
+                  <div className="anchor-hd">
+                    <span className="anchor-label">{q}</span>
+                  </div>
+                  <textarea
+                    rows={2}
+                    value={notes["s" + j] || ""}
+                    placeholder={"\u2026"}
+                    onChange={(e) => onNote(index, "s" + j, e.target.value)}
+                  />
+                </div>
+              ))}
+            </>
+          ) : null}
         </div>
       ) : null}
     </div>

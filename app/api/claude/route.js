@@ -53,9 +53,12 @@ export async function POST(req) {
         `goal and background. Order them as a deliberate progression and group them into ` +
         `exactly 3 named phases, two books per phase. Choose real, well-regarded books. ` +
         `Return ONLY a JSON array of 6 objects, no markdown, no prose. Each object: ` +
-        `{"phase":"NN · ShortName","title":"","author":"","why":"under 16 words, why THIS reader"}. ` +
-        `Phases numbered 01-03, in order.\n\nGOAL: ${goal}\nBACKGROUND: ${background}`;
-      const text = await callClaude(prompt, 900);
+        `{"phase":"NN · ShortName","title":"","author":"","why":"under 16 words, why THIS reader",` +
+        `"questions":["","" ]}. The two questions are book-SPECIFIC: what makes this book ` +
+        `different from the others and what this particular reader should extract from it. ` +
+        `Keep each question under 18 words. Phases numbered 01-03, in order.\n\n` +
+        `GOAL: ${goal}\nBACKGROUND: ${background}`;
+      const text = await callClaude(prompt, 1300);
       return Response.json({ text });
     }
 

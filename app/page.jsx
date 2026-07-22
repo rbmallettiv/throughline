@@ -45,15 +45,21 @@ export default function Page() {
   }, [hydrated, goal, background, books, notes, pov, stamp]);
 
   const bookDone = useCallback(
-    (i) => anchors.every((a) => (notes[i]?.[a.key] || "").trim().length > 0),
-    [notes]
+    (i) => {
+      const b = books[i] || {};
+      const specKeys = (b.questions || []).map((_, j) => "s" + j);
+      const allKeys = [...anchors.map((a) => a.key), ...specKeys];
+      return allKeys.every((k) => (notes[i]?.[k] || "").trim().length > 0);
+    },
+    [notes, books]
   );
 
   const doneCount = books.reduce((n, _, i) => n + (bookDone(i) ? 1 : 0), 0);
-  const logged = books.reduce(
-    (n, _, i) => n + anchors.filter((a) => (notes[i]?.[a.key] || "").trim()).length,
-    0
-  );
+  const logged = books.reduce((n, b, i) => {
+    const specKeys = (b.questions || []).map((_, j) => "s" + j);
+    const allKeys = [...anchors.map((a) => a.key), ...specKeys];
+    return n + allKeys.filter((k) => (notes[i]?.[k] || "").trim()).length;
+  }, 0);
 
   const setNote = (i, key, val) =>
     setNotes((prev) => ({ ...prev, [i]: { ...(prev[i] || {}), [key]: val } }));
@@ -75,6 +81,7 @@ export default function Page() {
         title: String(x.title || "Untitled"),
         author: String(x.author || ""),
         why: String(x.why || ""),
+        questions: Array.isArray(x.questions) ? x.questions.slice(0, 2).map(String) : [],
       }));
       setBooks(clean);
       setNotes({});
@@ -90,10 +97,13 @@ export default function Page() {
     const text = books
       .map((b, i) => {
         const n = notes[i] || {};
-        const body = anchors
+        const shared = anchors
           .map((a) => (n[a.key] ? `${a.label}: ${n[a.key]}` : ""))
-          .filter(Boolean)
-          .join(" | ");
+          .filter(Boolean);
+        const specific = (b.questions || [])
+          .map((q, j) => (n["s" + j] ? `${q} ${n["s" + j]}` : ""))
+          .filter(Boolean);
+        const body = [...shared, ...specific].join(" | ");
         return body ? `- ${b.title}: ${body}` : "";
       })
       .filter(Boolean)
