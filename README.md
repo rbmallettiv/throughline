@@ -82,4 +82,4 @@ tracker.
 
 Next.js (App Router), React, no database. Styling is plain CSS in
 `app/globals.css`. Fonts load from Google Fonts at runtime; swap to `next/font`
-for production if you want to remove the external request.
+for production if you want to remove the external request.  
